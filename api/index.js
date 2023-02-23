@@ -48,3 +48,25 @@ module.exports.sendResponse = async (event) => {
     }
   }
 };
+
+module.exports.getResult = async (event) => {
+  const result = previousResults.get(event.pathParameters.id) // não é necessário verificar se esse parâmetro existe, pois o serverless se encarrega de executar este método apenas se o path do arquivo YAML foi correspondido
+
+  if (!result) {
+    return {
+      statusCode: 404,
+      body: JSON.stringify({ error: 'Result not found' }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(result),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+}

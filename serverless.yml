@@ -16,9 +16,9 @@ functions:
           schemas:
             application/json: ${file(./schemas/sendResponse.json)}
 
-  api:
-    handler: index.handler
+  getResult:
+    handler: api/index.getResult
     events:
       - httpApi:
-          path: /
+          path: /api/results/{id}
           method: get

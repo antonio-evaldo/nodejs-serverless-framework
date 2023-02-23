@@ -10,11 +10,11 @@ functions:
     handler: api/index.sendResponse
     events:
       - httpApi:
-        path: /api/results
-        method: post
-        request:
-          schemas:
-            application/json: ${file(./schemas/sendResponse.json)}
+          path: /api/results
+          method: post
+          request:
+            schemas:
+              application/json: ${file(./schemas/sendResponse.json)}
 
   getResult:
     handler: api/index.getResult

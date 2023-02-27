@@ -22,15 +22,15 @@ provider:
     JWT_SECRET: ${param:jwtSecret}
 
 functions:
-  sendResponse:
-    handler: api/index.sendResponse
+  sendResult:
+    handler: api/index.sendResult
     events:
       - httpApi:
           path: /api/results
           method: post
           request:
             schemas:
-              application/json: ${file(./schemas/sendResponse.json)}
+              application/json: ${file(./schemas/sendResult.json)}
 
   getResult:
     handler: api/index.getResult

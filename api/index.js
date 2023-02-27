@@ -1,6 +1,12 @@
-const { randomUUID } = require('crypto');
+const { MongoClient, ObjectId } = require("mongodb");
 
-const previousResults = new Map()
+async function connectToDatabase() {
+  const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+
+  const connection = await client.connect();
+
+  return connection.db(process.env.MONGODB_DB_NAME);
+}
 
 function extractBody(event) {
   if (!event?.body) {
@@ -18,7 +24,7 @@ module.exports.sendResponse = async (event) => {
 
   const correctQuestions = [3, 1, 0, 2]
 
-  const correctAnswers = answers.reduce((acc, answer, index) => {
+  const totalCorrectAnswers = answers.reduce((acc, answer, index) => {
     if (answer === correctQuestions[index]) {
       acc++
     }
@@ -27,23 +33,23 @@ module.exports.sendResponse = async (event) => {
 
   const result = {
     name,
-    correctAnswers,
+    answers,
+    correctAnswers: totalCorrectAnswers,
     totalAnswers: answers.length
   }
 
-  const resultId = randomUUID()
-  previousResults.set(resultId, {
-    response: { name, answers },
-    result
-  })
+  const db = await connectToDatabase();
+  const collection = db.collection('results');
+
+  const { insertedId } = await collection.insertOne(result);
 
   return {
     statusCode: 201,
     body: JSON.stringify({
-      resultId,
+      resultId: insertedId,
       __hypermedia: {
         href: `/results.html`,
-        query: { id: resultId }
+        query: { id: insertedId }
       }
     }),
     headers: {
@@ -53,7 +59,12 @@ module.exports.sendResponse = async (event) => {
 };
 
 module.exports.getResult = async (event) => {
-  const result = previousResults.get(event.pathParameters.id) // não é necessário verificar se esse parâmetro existe, pois o serverless se encarrega de executar este método apenas se o path do arquivo YAML foi correspondido
+  const db = await connectToDatabase();
+  const collection = db.collection('results');
+
+  const result = await collection.findOne({
+    _id: new ObjectId(event.pathParameters.id)
+  }) // não é necessário verificar se esse parâmetro existe, pois o serverless se encarrega de executar este método apenas se o path do arquivo YAML foi correspondido
 
   if (!result) {
     return {

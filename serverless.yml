@@ -1,9 +1,21 @@
+org: antonioevaldo
+app: aws-node-http-api-project
 service: aws-node-http-api-project
 frameworkVersion: '3'
+
+params:
+  default:
+    dbName: alura-serverless
+  dev:
+    connectionString: mongodb://localhost:27017/${self:params.default.dbName}
+  prod:
 
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    MONGODB_CONNECTION_STRING: ${param:connectionString}
+    MONGODB_DB_NAME: ${param:dbName}
 
 functions:
   sendResponse:

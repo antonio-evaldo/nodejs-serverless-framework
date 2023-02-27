@@ -1,5 +1,11 @@
 const $ = document.querySelector.bind(document)
 
+const token = window.localStorage.getItem('token');
+
+if (!token) {
+  window.location.href = '/login.html';
+}
+
 $('form').addEventListener('submit', async (e) => {
   e.preventDefault()
   const data = {
@@ -23,11 +29,12 @@ $('form').addEventListener('submit', async (e) => {
     data.answers[Number(answer.name) - 1] = Number(answer.value)
   })
 
-  const response = await fetch('/api/results', {
+  const response = await fetch('https://htfvd3heo2.execute-api.us-east-1.amazonaws.com/api/results', {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     }
   })
 

@@ -13,6 +13,8 @@ params:
   prod:
 
 provider:
+  httpApi:
+    cors: true
   name: aws
   runtime: nodejs18.x
   environment:

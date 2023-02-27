@@ -11,7 +11,7 @@ function countCorrectAnswers(name, answers) {
   const result = {
     name,
     answers,
-    correctAnswers: totalCorrectAnswers,
+    totalCorrectAnswers,
     totalAnswers: answers.length
   }
 
